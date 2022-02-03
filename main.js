@@ -9,7 +9,6 @@ const numBtns = document.querySelectorAll("[data-num]");
 let operator = null;
 let num1 = null;
 let num2 = null;
-let result = null;
 
 const calculate = (a, b, op) => {
   switch (op) {
@@ -27,20 +26,25 @@ const calculate = (a, b, op) => {
 const addOperator = (op) => {
   operator = op;
   num2 = null;
-  if(!num1) num1 = Number(currentCalculationText.textContent);
+  if (!num1) num1 = Number(currentCalculationText.textContent);
   previousCalculationText.textContent = num1 + " " + operator;
   currentCalculationText.textContent = "";
 };
 
 const updateDisplay = () => {
   previousCalculationText.textContent = `${num1} ${operator} ${num2} =`;
-}
+};
+
+const equals = () => {
+  if (!num1) return;
+  if (!num2) num2 = Number(currentCalculationText.textContent);
+  updateDisplay();
+  num1 = calculate(num1, num2, operator);
+  currentCalculationText.textContent = num1;
+};
 
 equalsBtn.addEventListener("click", () => {
-  if(!num2) num2 = Number(currentCalculationText.textContent);
-  updateDisplay();
-  num1 = calculate(num1, num2,operator)
-  currentCalculationText.textContent = num1;
+  equals();
 });
 
 operatorBtns.forEach((btn) => {
@@ -49,9 +53,6 @@ operatorBtns.forEach((btn) => {
   });
 });
 
-operatorBtns.forEach((btn) => {
-  console.log(btn.textContent);
-});
 numBtns.forEach((btn) => {
   btn.addEventListener("click", () => {
     if (
@@ -79,10 +80,22 @@ clearAllBtn.addEventListener("click", () => {
 });
 
 window.addEventListener("keydown", (e) => {
-  if (e.key >= 0 || e.key <= 9) {
+  if (e.key >= 0 || e.key <= 9 || e.key === ".") {
+    if (currentCalculationText.textContent.includes(".") && e.key === ".")
+      return;
     currentCalculationText.textContent += e.key;
   } else if (e.key === "Backspace") {
     currentCalculationText.textContent =
       currentCalculationText.textContent.slice(0, -1);
+  } else if (e.code === "Enter" || e.code === "NumpadEnter") {
+    equals();
+  } else if (e.key === "+") {
+    addOperator("+");
+  } else if (e.key === "-") {
+    addOperator("-");
+  } else if (e.key === "*") {
+    addOperator("x");
+  } else if (e.key === "/") {
+    addOperator("/");
   }
 });
